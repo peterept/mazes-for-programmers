@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-import random
 from enum import Enum
 
 
@@ -18,9 +17,13 @@ class GridCell:
         self.y = y
         self.xy = (x, y)
 
-    def carve(self, dir: GridDir):
+    def carve(self, dir: GridDir) -> bool:
         """Carve (remove) the wall in the direction for this cell. returns true if valid"""
         return self.grid.carve(self, dir)
+
+    def has_wall(self, dir: GridDir) -> bool:
+        """Returns True if there there a wall in the given direction from this cell"""
+        return self.grid.cell_has_wall(self, dir)
 
 
 class Grid:
@@ -60,9 +63,15 @@ class Grid:
 
     def init_cell(self, cell: GridCell):
         dirs = [
-            [-1, -1], [0, -1], [1, -1],
-            [-1, 0],  [0, 0],  [1, 0],
-            [-1, 1],  [0, 1],  [1, 1],
+            [-1, -1],
+            [0, -1],
+            [1, -1],
+            [-1, 0],
+            [0, 0],
+            [1, 0],
+            [-1, 1],
+            [0, 1],
+            [1, 1],
         ]
         for dir in dirs:
             gx = self.intern_xy(cell.x) + dir[0]
@@ -75,6 +84,18 @@ class Grid:
     def cell(self, x: int, y: int) -> GridCell:
         """Returns a GridCell given it's grid co-ordinate"""
         return GridCell(self, x, y)
+
+    def cell_has_wall(self, cell: GridCell, dir: GridDir) -> bool:
+        """Returns True if there there a wall in the given direction from this cell"""
+        dirs = {
+            GridDir.NORTH: [0, -1],
+            GridDir.SOUTH: [0, 1],
+            GridDir.EAST: [1, 0],
+            GridDir.WEST: [-1, 0],
+        }
+        gx = self.intern_xy(cell.x) + dirs[dir][0]
+        gy = self.intern_xy(cell.y) + dirs[dir][1]
+        return self.g[gy][gx] != " "
 
     def carve(self, cell: GridCell, dir: GridDir):
         """Carve (remove) the wall in the direction for this cell. returns true if valid"""
@@ -122,21 +143,3 @@ class GridIterator:
             self.x = 0
             self.y += 1
         return result
-
-
-def main():
-    grid = Grid(12, 8)
-
-    # for every cell, randomly carve out to the East or North (if possible)
-    for cell in grid:
-        if random.randrange(0, 2):
-            cell.carve(GridDir.EAST) or cell.carve(GridDir.NORTH)
-        else:
-            cell.carve(GridDir.NORTH) or cell.carve(GridDir.EAST)
-
-    print(grid)
-    print(f"Maze {grid.width} x {grid.height}")
-
-
-if __name__ == "__main__":
-    main()
