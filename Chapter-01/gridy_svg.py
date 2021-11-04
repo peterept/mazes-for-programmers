@@ -3,8 +3,11 @@
 import gridy
 
 # To install svgwrite:
-# c:\> py -0p
-# c:\> py -3.6-64 -m pip install svgwrite
+# Win:
+#   c:\> py -0p
+#   c:\> py -3.6-64 -m pip install svgwrite
+# Mac:
+#   $ pip3 install svgwrite --user
 import svgwrite
 
 
@@ -30,7 +33,7 @@ class GridSvg:
             # assume borders
             x = cell.x
             y = cell.y
-            if cell.has_wall(gridy.GridDir.NORTH):
+            if not cell.is_linked(cell.n):
                 dwg.add(
                     dwg.line(
                         (x - stroke_width_half, y),
@@ -38,7 +41,7 @@ class GridSvg:
                         **stroke_style,
                     )
                 )
-            if cell.has_wall(gridy.GridDir.SOUTH):
+            if not cell.is_linked(cell.s):
                 dwg.add(
                     dwg.line(
                         (x - stroke_width_half, y + 1),
@@ -46,7 +49,7 @@ class GridSvg:
                         **stroke_style,
                     )
                 )
-            if cell.has_wall(gridy.GridDir.WEST):
+            if not cell.is_linked(cell.w):
                 dwg.add(
                     dwg.line(
                         (x, y - stroke_width_half),
@@ -54,7 +57,7 @@ class GridSvg:
                         **stroke_style,
                     )
                 )
-            if cell.has_wall(gridy.GridDir.EAST):
+            if not cell.is_linked(cell.e):
                 dwg.add(
                     dwg.line(
                         (x + 1, y + stroke_width_half),
