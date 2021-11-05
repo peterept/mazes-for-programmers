@@ -85,6 +85,10 @@ class Grid:
     def __iter__(self):
         return GridIterator(self)
 
+    @property
+    def rows(self):
+        return self.cells
+
 
 class GridIterator:
     def __init__(self, grid: Grid):
